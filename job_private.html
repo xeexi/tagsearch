@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「職務経験」×「人生経験」</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  text-align: center;
+  overflow-x: auto;
+  position: relative;
+}
+
+/* 背景アニメーション */
+.bg-animation {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-animation .orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  animation: float linear infinite;
+}
+
+.orb:nth-child(1) {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #6366f1, transparent);
+  top: 10%; left: 10%;
+  animation-duration: 25s;
+}
+.orb:nth-child(2) {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, #ec4899, transparent);
+  top: 60%; left: 70%;
+  animation-duration: 30s;
+  animation-delay: -5s;
+}
+.orb:nth-child(3) {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, #14b8a6, transparent);
+  top: 30%; left: 50%;
+  animation-duration: 35s;
+  animation-delay: -10s;
+}
+.orb:nth-child(4) {
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, #f59e0b, transparent);
+  top: 80%; left: 20%;
+  animation-duration: 28s;
+  animation-delay: -15s;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(100px, -150px) scale(1.1); }
+  50% { transform: translate(-50px, 100px) scale(0.9); }
+  75% { transform: translate(150px, 50px) scale(1.05); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 30px 20px;
+}
+
+h1 {
+  font-size: 1.3em;
+  margin-bottom: 10px;
+  color: #f0f0f0;
+  text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+}
+
+.description {
+  font-size: 1em;
+  color: #b0b0b0;
+  margin-bottom: 5px;
+}
+
+.note {
+  font-size: 0.85em;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+/* 凡例 */
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.legend-label {
+  font-size: 0.85em;
+  color: #aaa;
+}
+
+.legend-bar {
+  width: 300px;
+  height: 18px;
+  border-radius: 9px;
+  background: linear-gradient(to right,
+    hsl(240, 100%, 50%),
+    hsl(200, 100%, 50%),
+    hsl(160, 100%, 50%),
+    hsl(120, 100%, 45%),
+    hsl(60, 100%, 50%),
+    hsl(30, 100%, 50%),
+    hsl(0, 100%, 50%)
+  );
+  border: 1px solid #444;
+}
+
+/* 表コンテナ */
+.table-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.row-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #ccc;
+  writing-mode: horizontal-tb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 10px;
+  min-width: 30px;
+}
+
+.col-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #ccc;
+  margin-bottom: 8px;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th, td {
+  border: 1px solid #333;
+  padding: 4px 2px;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+th {
+  background: #2a2a40;
+  color: #aaa;
+  font-weight: 600;
+  font-size: clamp(0.5em, 1.2vw, 0.85em);
+  position: sticky;
+}
+
+thead th {
+  top: 0;
+  z-index: 2;
+}
+
+th.row-header {
+  left: 0;
+  z-index: 1;
+  background: #2a2a40;
+  min-width: 60px;
+  max-width: 100px;
+}
+
+th.corner {
+  z-index: 3;
+  left: 0;
+  top: 0;
+}
+
+td {
+  font-size: clamp(0.45em, 1.1vw, 0.8em);
+  cursor: default;
+  position: relative;
+  transition: transform 0.1s;
+}
+
+td.has-data {
+  cursor: pointer;
+}
+
+td.has-data:hover {
+  filter: brightness(1.3);
+  outline: 2px solid #fff;
+  outline-offset: -2px;
+}
+
+td.no-data {
+  background: #1e1e30 !important;
+  color: #555;
+}
+
+/* Tooltip */
+.tooltip {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  background: #2d2d4a;
+  border: 1px solid #555;
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  text-align: left;
+  white-space: nowrap;
+  pointer-events: none;
+  max-width: 90vw;
+}
+
+.tooltip.visible {
+  display: block;
+}
+
+.tooltip-title {
+  font-size: 1em;
+  font-weight: bold;
+  color: #f0f0f0;
+  margin-bottom: 4px;
+}
+
+.tooltip-subtitle {
+  font-size: 0.85em;
+  color: #aaa;
+  margin-bottom: 8px;
+}
+
+.tooltip-item {
+  font-size: 0.85em;
+  color: #ddd;
+  padding: 2px 0;
+}
+
+.tooltip-item::before {
+  content: "📖 ";
+}
+
+/* ポップアップ */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.overlay.visible {
+  display: flex;
+}
+
+.overlay img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 8px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.8);
+}
+</style>
+</head>
+<body>
+<div class="bg-animation">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
+
+<div class="content">
+  <h1>「職務経験」×「人生経験」</h1>
+
+  <div class="legend">
+    <span class="legend-label">0件</span>
+    <div class="legend-bar"></div>
+    <span class="legend-label">50件</span>
+  </div>
+
+  <p class="col-title">人生経験</p>
+
+  <div class="table-wrapper">
+    <div class="row-title">業務経験</div>
+    <div class="table-container">
+      <table id="mainTable">
+        <thead>
+          <tr>
+            <th class="corner"></th>
+            <th>アーティスト</th>
+            <th>アート</th>
+            <th>アドリブ</th>
+            <th>アマチュア</th>
+            <th>イヤートレーニング</th>
+            <th>インスピレーション</th>
+            <th>インプロビゼーション</th>
+            <th>カルチャースクール</th>
+            <th>グループレッスン</th>
+            <th>コミュニティ</th>
+            <th>サックス</th>
+            <th>ジャズ</th>
+            <th>セッション</th>
+            <th>ソルフェージュ</th>
+            <th>フレーズ</th>
+            <th>メロディ</th>
+            <th>リスニング</th>
+            <th>リズム</th>
+            <th>飲食店</th>
+            <th>演奏</th>
+            <th>音楽教室</th>
+            <th>音楽理論</th>
+            <th>音感</th>
+            <th>音程</th>
+            <th>絵画鑑賞</th>
+            <th>楽器</th>
+            <th>感覚</th>
+            <th>感性</th>
+            <th>管楽器</th>
+            <th>傾聴</th>
+            <th>芸術</th>
+            <th>月謝</th>
+            <th>個人レッスン</th>
+            <th>耳</th>
+            <th>人柄</th>
+            <th>接客マナー</th>
+            <th>即興</th>
+            <th>聴力</th>
+            <th>店員評価</th>
+            <th>美術館</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="row-header">AI活用</th>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(206, 87%, 44%);color:#fff;font-weight:bold;" data-key="AI活用_アート" data-count="7">7件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(216, 86%, 43%);color:#fff;font-weight:bold;" data-key="AI活用_コミュニティ" data-count="5">5件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="AI活用_セッション" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="AI活用_リスニング" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(211, 87%, 44%);color:#fff;font-weight:bold;" data-key="AI活用_演奏" data-count="6">6件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="AI活用_絵画鑑賞" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(206, 87%, 44%);color:#fff;font-weight:bold;" data-key="AI活用_傾聴" data-count="7">7件</td>
+            <td class="has-data" style="background:hsl(206, 87%, 44%);color:#fff;font-weight:bold;" data-key="AI活用_芸術" data-count="7">7件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(206, 87%, 44%);color:#fff;font-weight:bold;" data-key="AI活用_即興" data-count="7">7件</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="AI活用_聴力" data-count="2">2件</td>
+            <td class="has-data" style="background:hsl(221, 86%, 42%);color:#fff;font-weight:bold;" data-key="AI活用_店員評価" data-count="4">4件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="AI活用_美術館" data-count="1">1件</td>
+          </tr>
+          <tr>
+            <th class="row-header">API</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="API_芸術" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="API_即興" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">AWS</th>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(0, 100%, 40%);color:#fff;font-weight:bold;" data-key="AWS_飲食店" data-count="50">50件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(226, 86%, 42%);color:#fff;font-weight:bold;" data-key="AWS_絵画鑑賞" data-count="3">3件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(178, 89%, 48%);color:#fff;font-weight:bold;" data-key="AWS_傾聴" data-count="13">13件</td>
+            <td class="has-data" style="background:hsl(14, 99%, 42%);color:#fff;font-weight:bold;" data-key="AWS_芸術" data-count="47">47件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(10, 99%, 41%);color:#fff;font-weight:bold;" data-key="AWS_即興" data-count="48">48件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(14, 99%, 42%);color:#fff;font-weight:bold;" data-key="AWS_店員評価" data-count="47">47件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">IaC</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">インフラ</th>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(226, 86%, 42%);color:#fff;font-weight:bold;" data-key="インフラ_コミュニティ" data-count="3">3件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="インフラ_セッション" data-count="2">2件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="インフラ_傾聴" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(226, 86%, 42%);color:#fff;font-weight:bold;" data-key="インフラ_即興" data-count="3">3件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">オフショア</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="オフショア_飲食店" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(221, 86%, 42%);color:#fff;font-weight:bold;" data-key="オフショア_芸術" data-count="4">4件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(226, 86%, 42%);color:#fff;font-weight:bold;" data-key="オフショア_即興" data-count="3">3件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">クラウド</th>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(19, 99%, 42%);color:#fff;font-weight:bold;" data-key="クラウド_アート" data-count="46">46件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="クラウド_飲食店" data-count="2">2件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="クラウド_演奏" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(206, 87%, 44%);color:#fff;font-weight:bold;" data-key="クラウド_傾聴" data-count="7">7件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="クラウド_芸術" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(226, 86%, 42%);color:#fff;font-weight:bold;" data-key="クラウド_即興" data-count="3">3件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="クラウド_聴力" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="クラウド_美術館" data-count="1">1件</td>
+          </tr>
+          <tr>
+            <th class="row-header">コスト削減</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="コスト削減_飲食店" data-count="2">2件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">システム開発</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="システム開発_コミュニティ" data-count="2">2件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="システム開発_セッション" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="システム開発_楽器" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(216, 86%, 43%);color:#fff;font-weight:bold;" data-key="システム開発_傾聴" data-count="5">5件</td>
+            <td class="has-data" style="background:hsl(187, 88%, 47%);color:#fff;font-weight:bold;" data-key="システム開発_芸術" data-count="11">11件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(211, 87%, 44%);color:#fff;font-weight:bold;" data-key="システム開発_即興" data-count="6">6件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">スケーラビリティ</th>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">タスク管理</th>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(197, 88%, 45%);color:#fff;font-weight:bold;" data-key="タスク管理_アート" data-count="9">9件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="タスク管理_アドリブ" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="タスク管理_インプロビゼーション" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="タスク管理_セッション" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="タスク管理_リスニング" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="タスク管理_リズム" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(216, 86%, 43%);color:#fff;font-weight:bold;" data-key="タスク管理_飲食店" data-count="5">5件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="タスク管理_音楽理論" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="タスク管理_音程" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="タスク管理_絵画鑑賞" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(211, 87%, 44%);color:#fff;font-weight:bold;" data-key="タスク管理_傾聴" data-count="6">6件</td>
+            <td class="has-data" style="background:hsl(206, 87%, 44%);color:#fff;font-weight:bold;" data-key="タスク管理_芸術" data-count="7">7件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(226, 86%, 42%);color:#fff;font-weight:bold;" data-key="タスク管理_耳" data-count="3">3件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(221, 86%, 42%);color:#fff;font-weight:bold;" data-key="タスク管理_即興" data-count="4">4件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="タスク管理_聴力" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(226, 86%, 42%);color:#fff;font-weight:bold;" data-key="タスク管理_店員評価" data-count="3">3件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">チケット駆動開発</th>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_リズム" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_飲食店" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_絵画鑑賞" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_傾聴" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_芸術" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_耳" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_接客マナー" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_即興" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_聴力" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_店員評価" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="チケット駆動開発_美術館" data-count="1">1件</td>
+          </tr>
+          <tr>
+            <th class="row-header">データ処理</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="データ処理_感覚" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="データ処理_感性" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">デイトレード</th>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="デイトレード_アート" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="デイトレード_リスニング" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="デイトレード_リズム" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(154, 90%, 51%);color:#fff;font-weight:bold;" data-key="デイトレード_飲食店" data-count="18">18件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="デイトレード_絵画鑑賞" data-count="2">2件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(43, 97%, 45%);color:#fff;font-weight:bold;" data-key="デイトレード_傾聴" data-count="41">41件</td>
+            <td class="has-data" style="background:hsl(96, 94%, 52%);color:#fff;font-weight:bold;" data-key="デイトレード_芸術" data-count="30">30件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="デイトレード_個人レッスン" data-count="2">2件</td>
+            <td class="has-data" style="background:hsl(154, 90%, 51%);color:#fff;font-weight:bold;" data-key="デイトレード_耳" data-count="18">18件</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="デイトレード_人柄" data-count="2">2件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(77, 95%, 50%);color:#fff;font-weight:bold;" data-key="デイトレード_即興" data-count="34">34件</td>
+            <td class="has-data" style="background:hsl(202, 87%, 45%);color:#fff;font-weight:bold;" data-key="デイトレード_聴力" data-count="8">8件</td>
+            <td class="has-data" style="background:hsl(154, 90%, 51%);color:#fff;font-weight:bold;" data-key="デイトレード_店員評価" data-count="18">18件</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="デイトレード_美術館" data-count="2">2件</td>
+          </tr>
+          <tr>
+            <th class="row-header">バナー広告</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="バナー広告_サックス" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">パフォーマンスチューニング</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(206, 87%, 44%);color:#fff;font-weight:bold;" data-key="パフォーマンスチューニング_楽器" data-count="7">7件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">プロファイリング</th>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="プロファイリング_コミュニティ" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="プロファイリング_傾聴" data-count="2">2件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="プロファイリング_即興" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">ボトルネック</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="ボトルネック_アドリブ" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="ボトルネック_リスニング" data-count="2">2件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(226, 86%, 42%);color:#fff;font-weight:bold;" data-key="ボトルネック_音楽理論" data-count="3">3件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="ボトルネック_絵画鑑賞" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="ボトルネック_楽器" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="ボトルネック_芸術" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="ボトルネック_個人レッスン" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">リアルタイム</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="リアルタイム_ジャズ" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">レイテンシ</th>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="レイテンシ_アート" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="レイテンシ_楽器" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">運用コスト</th>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">可視化</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">課題管理</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="課題管理_リズム" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="課題管理_飲食店" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">画像生成</th>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(10, 99%, 41%);color:#fff;font-weight:bold;" data-key="画像生成_アート" data-count="48">48件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="画像生成_感性" data-count="2">2件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="画像生成_芸術" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="画像生成_耳" data-count="2">2件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">株</th>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="株_アート" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="株_コミュニティ" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="株_飲食店" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(216, 86%, 43%);color:#fff;font-weight:bold;" data-key="株_感覚" data-count="5">5件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="株_芸術" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(226, 86%, 42%);color:#fff;font-weight:bold;" data-key="株_美術館" data-count="3">3件</td>
+          </tr>
+          <tr>
+            <th class="row-header">株式市場</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(216, 86%, 43%);color:#fff;font-weight:bold;" data-key="株式市場_コミュニティ" data-count="5">5件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="株式市場_サックス" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="株式市場_リズム" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(221, 86%, 42%);color:#fff;font-weight:bold;" data-key="株式市場_感覚" data-count="4">4件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="株式市場_芸術" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">季節性</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">金融</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="金融_飲食店" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="金融_演奏" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="金融_芸術" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="金融_接客マナー" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="金融_即興" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="金融_店員評価" data-count="1">1件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">証券会社</th>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(182, 89%, 47%);color:#fff;font-weight:bold;" data-key="証券会社_コミュニティ" data-count="12">12件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">証券取引所</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="証券取引所_サックス" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(115, 93%, 54%);color:#fff;font-weight:bold;" data-key="証券取引所_ジャズ" data-count="26">26件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">進捗管理</th>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="進捗管理_アート" data-count="2">2件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="進捗管理_コミュニティ" data-count="2">2件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(216, 86%, 43%);color:#fff;font-weight:bold;" data-key="進捗管理_ジャズ" data-count="5">5件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(221, 86%, 42%);color:#fff;font-weight:bold;" data-key="進捗管理_ソルフェージュ" data-count="4">4件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(226, 86%, 42%);color:#fff;font-weight:bold;" data-key="進捗管理_リスニング" data-count="3">3件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="進捗管理_リズム" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="進捗管理_美術館" data-count="1">1件</td>
+          </tr>
+          <tr>
+            <th class="row-header">性能評価</th>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">速度向上</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="速度向上_ソルフェージュ" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">損切り</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="損切り_リズム" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">脱Excel</th>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="has-data" style="background:hsl(216, 86%, 43%);color:#fff;font-weight:bold;" data-key="脱Excel_即興" data-count="5">5件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+          </tr>
+          <tr>
+            <th class="row-header">定量評価</th>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="定量評価_感覚" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="定量評価_感性" data-count="2">2件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">0件</td>
+          </tr>
+          <tr>
+            <th class="row-header">投資</th>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(182, 89%, 47%);color:#fff;font-weight:bold;" data-key="投資_アート" data-count="12">12件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(178, 89%, 48%);color:#fff;font-weight:bold;" data-key="投資_コミュニティ" data-count="13">13件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="投資_セッション" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(230, 86%, 41%);color:#fff;font-weight:bold;" data-key="投資_リズム" data-count="2">2件</td>
+            <td class="has-data" style="background:hsl(216, 86%, 43%);color:#fff;font-weight:bold;" data-key="投資_飲食店" data-count="5">5件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="投資_楽器" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(178, 89%, 48%);color:#fff;font-weight:bold;" data-key="投資_感覚" data-count="13">13件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="投資_感性" data-count="1">1件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(216, 86%, 43%);color:#fff;font-weight:bold;" data-key="投資_芸術" data-count="5">5件</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="投資_耳" data-count="1">1件</td>
+            <td class="has-data" style="background:hsl(235, 85%, 41%);color:#fff;font-weight:bold;" data-key="投資_人柄" data-count="1">1件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+            <td class="no-data">-</td>
+            <td class="no-data">-</td>
+            <td class="no-data">0件</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+<div class="overlay" id="overlay" onclick="this.classList.remove('visible')">
+  <img id="overlayImg" src="" alt="検索結果">
+</div>
+
+<script>
+const titles = {"AI活用_アート": ["AIが描く未来のキャンバス ―機械に美意識はあるのか―", "人工知能に芸術は殺せない", "AIアート革命 ―あなたの感性、まだ必要ですか？―", "ロボット画伯の逆襲 ―AI活用で絵心ゼロでもアーティスト―", "AIとアートの危険な関係 ―創造力の下克上―"], "AI活用_コミュニティ": ["AI活用コミュニティ運営術 ―集まれ！テクノ村人たち―", "機械と人をつなぐ町内会 ―AI時代のコミュニティ再発明―", "チャットボットが自治会長になった日", "AIが繋ぐご近所付き合い ―デジタル井戸端会議の始め方―", "コミュニティをAIで回す ―孤独のエンジニアは人と繋がれるか―"], "AI活用_セッション": ["AIとジャムセッション ―機械は即興演奏のノリを理解できるか―", "セッションを支配するAI ―あなたの会議、AIに乗っ取られてませんか―", "人工知能とセッションする技術", "AI活用でセッション力が爆上がりする本", "セッション相手はAI ―最強の練習パートナー活用法―"], "AI活用_リスニング": ["AIに耳はあるのか ―リスニング力とテクノロジーの融合―", "AI活用リスニング術 ―聴く力を機械に学ぶ―", "AIが聴き取れて人間が聴き取れないもの", "リスニング革命 ―AIに教わる「聴く」技術―", "人工知能の耳を借りたら英語が聞こえた"], "AI活用_傾聴": ["AIは人の話を聞けるのか ―傾聴テクノロジーの最前線―", "人工知能に傾聴を教えたら人間より優しくなった", "AI活用傾聴術 ―機械だから言えることがある―", "話を聞かない上司をAIに置き換えてみた", "傾聴AI開発記 ―寄り添うテクノロジーのつくりかた―"], "AI活用_即興": ["AIに即興は可能か ―アルゴリズムが奏でる自由―", "即興力をAIで鍛える ―予測不能を楽しむ技術―", "AI即興演奏入門 ―機械と人間のアドリブ合戦―", "AIが即興で小説を書いたら文学賞候補になった件", "即興AI ―計算された偶然の美しさ―"], "AI活用_店員評価": ["AIが採点する接客術 ―店員評価の新常識―", "あなたの笑顔、AIに何点ですか？", "AI店員評価で売上が3倍になった店の秘密", "人工知能が見抜く一流店員の条件", "AI活用店員評価 ―数値化された「おもてなし」の衝撃―"], "AI活用_演奏": ["AIと二重奏 ―人工知能が奏でるハーモニー―", "演奏するAI、聴き惚れる人間", "AIが演奏を始めたら音楽家は失業するのか", "人工知能演奏会 ―客席のAI、舞台のAI―", "AI活用で演奏力が劇的に上がる練習法"], "AI活用_絵画鑑賞": ["AIと巡る美の迷宮 ―絵画鑑賞の新次元―", "人工知能に名画の感想を聞いてみた", "AI活用絵画鑑賞 ―機械の目が見つけた隠されたメッセージ―", "AIガイドと行く世界名画ツアー", "絵画鑑賞をAIに任せたら感動が倍になった理由"], "AI活用_美術館": ["AI美術館 ―人工知能がキュレーションする未来―", "美術館にAIを放り込んだらどうなるか", "AI活用美術館ガイド ―解説はロボットにおまかせ―", "美術館の受付がAIだった件について", "人工知能と美術館デート ―最高の鑑賞パートナー―"], "AI活用_聴力": ["AIで聴力革命 ―テクノロジーが耳を救う―", "人工知能が聴力を拡張する時代", "AI活用聴力トレーニング ―耳の限界を超えろ―", "聴力をAIで補う ―聞こえない音が聞こえる日―", "AIと聴力の未来 ―超人の耳を手に入れる方法―"], "AI活用_芸術": ["AIは芸術家になれるか ―創造と計算のはざまで―", "人工知能芸術論 ―美の定義が変わる日―", "AI活用芸術入門 ―機械が描く美しき未来―", "芸術を殺すAI、芸術を救うAI", "AIと芸術の禁断の果実 ―創造力は誰のものか―"], "API_即興": ["APIで即興演奏 ―プログラマーが奏でる即興コード―", "即興APIハック ―その場のノリでシステムを繋ぐ技術―", "APIと即興の共通点 ―柔軟に繋がる技術―", "即興API設計術 ―仕様書なんて後で書け―", "APIコールは即興だ ―エンジニアのアドリブ力―"], "API_芸術": ["APIは芸術である ―美しいインターフェースの条件―", "芸術的API設計 ―コードに美を宿す―", "APIと芸術の意外な共通点7つ", "芸術系エンジニアのAPI設計論", "RESTful芸術論 ―APIに魂を込める方法―"], "AWS_傾聴": ["AWSに傾聴を学ぶ ―クラウドが教える聴く力―", "傾聴するクラウド ―AWSカスタマーサービスの秘密―", "AWSエンジニアの傾聴力 ―なぜ技術者に共感力が必要か―", "クラウドと傾聴 ―AWSが変えるコミュニケーション―", "AWSの中の人は傾聴の達人だった"], "AWS_即興": ["AWS即興デプロイ ―障害対応はアドリブが命―", "即興クラウド構築術 ―AWSを使い倒す男たちの物語―", "AWSで即興インフラ ―設計書がなくても動かせ―", "即興AWS ―本番環境でのアドリブ力が試される―", "クラウドは即興だ ―AWSエンジニアの現場力―"], "AWS_店員評価": ["AWSで店員評価システムを作ってみた", "クラウド店員評価 ―AWSが変える接客業の未来―", "AWS×店員評価 ―サーバーレスおもてなし革命―", "店員の笑顔をAWSで解析したら衝撃の結果が出た", "AWS店員評価入門 ―クラウドで接客力を数値化する―"], "AWS_絵画鑑賞": ["AWSで絵画鑑賞 ―クラウドが拓くアートの民主化―", "絵画鑑賞をAWSでデジタル化したら美術館が震えた", "AWS×絵画鑑賞 ―Rekognitionが読み解く名画の秘密―", "クラウドで楽しむ絵画鑑賞入門", "AWSエンジニアの週末絵画鑑賞記"], "AWS_芸術": ["AWSは芸術だ ―美しいアーキテクチャの条件―", "芸術的クラウド設計 ―AWSで描くシステムの美―", "AWSと芸術の交差点 ―テクノロジーが生む新しい美―", "クラウド芸術論 ―AWS構成図は現代アートである―", "AWSで芸術を民主化する ―テクノロジーが壊す壁―"], "AWS_飲食店": ["AWSで飲食店DX ―町の定食屋がクラウド化した結果―", "飲食店をAWSで回す ―ラーメン屋のサーバーレス革命―", "AWS飲食店経営術 ―クラウドで注文から会計まで自動化―", "町の居酒屋がAWSを導入したら繁盛した話", "飲食店×AWS ―料理人がインフラエンジニアになった日―"], "インフラ_コミュニティ": ["インフラエンジニアのコミュニティ入門 ―孤独な運用からの脱出―", "コミュニティがインフラを支える ―みんなで守るシステム基盤―", "インフラ勉強会コミュニティの作り方", "深夜のインフラコミュニティ ―障害対応を語り合う仲間たち―", "インフラおじさんのコミュニティ活動記"], "インフラ_セッション": ["インフラセッション ―運用の裏側を語る夜―", "セッションで学ぶインフラ構築術", "インフラエンジニアのジャムセッション ―技術で即興演奏―", "深夜のインフラセッション ―サーバーと音楽の融合―", "インフラ×セッション ―システム基盤を奏でる技術者たち―"], "インフラ_傾聴": ["インフラエンジニアこそ傾聴を学べ", "サーバーの声を傾聴する ―障害の予兆を聴き取る技術―", "傾聴するインフラ ―システムが語るメッセージ―", "インフラと傾聴 ―なぜ運用に共感力が必要なのか―", "ログを傾聴するインフラエンジニアの日常"], "インフラ_即興": ["インフラ即興構築 ―障害発生！アドリブで乗り切れ―", "即興インフラ ―設計書なしで本番環境を救った男たち―", "インフラの即興力 ―想定外を楽しむ運用術―", "インフラエンジニアの即興対応 ―冷や汗と感動の記録―", "即興でインフラを組む ―火消しのプロが教える現場力―"], "オフショア_即興": ["オフショア即興開発 ―言葉が通じなくてもコードは通じる―", "即興オフショア ―仕様変更をアドリブで乗り切る国際チーム―", "オフショアのアドリブ力 ―即興で回す海外開発の現場―", "オフショア×即興 ―仕様書がなくても動くシステムの秘密―", "海を越えた即興開発 ―オフショアチームの底力―"], "オフショア_芸術": ["オフショア開発は芸術だ ―異文化マネジメントの美学―", "芸術的オフショア ―海外チームが生む想定外の美しさ―", "オフショアと芸術の共通点 ―創造と混沌のはざまで―", "オフショア芸術論 ―国境を超えるコードの美―", "海外開発チームの芸術的コードレビュー"], "オフショア_飲食店": ["オフショアで飲食店システム構築 ―海外エンジニアが作る予約システム―", "飲食店DXをオフショアで回したらカレーが出てきた", "オフショア×飲食店 ―異国の味とシステム開発の融合―", "海外チームが作った飲食店アプリが斜め上だった件", "オフショア飲食店システム奮闘記 ―文化の壁を越えて―"], "クラウド_アート": ["クラウドアート ―雲の上の美術館―", "クラウドで始めるデジタルアート入門", "アートをクラウドに乗せたら世界が変わった", "クラウドアーティスト ―サーバー上で描く未来の芸術―", "雲の中のアート ―クラウドが変える創作の形―"], "クラウド_傾聴": ["クラウドの声を傾聴する ―システムが発するSOS―", "傾聴クラウド ―サーバーの悲鳴を聞き逃すな―", "クラウドエンジニアの傾聴力 ―アラートの裏側を読む―", "クラウドに傾聴を学ぶ ―分散システムのコミュニケーション術―", "クラウドと傾聴 ―技術者に必要な「聴く」スキル―"], "クラウド_即興": ["クラウド即興構築術 ―その場のノリでインフラを組む―", "即興クラウド ―障害時のアドリブがシステムを救う―", "クラウドは即興で組め ―設計書より直感が大事な瞬間―", "即興クラウドアーキテクト ―天才か無謀か―", "クラウド×即興 ―アドリブで乗り切るDevOpsの現場―"], "クラウド_演奏": ["クラウドで演奏する ―ネット越しの音楽セッション―", "クラウド演奏会 ―遅延との戦い、音楽との和解―", "雲の上の演奏家 ―クラウドが変える音楽体験―", "クラウド演奏入門 ―サーバーレスでオーケストラ―", "演奏をクラウドに乗せたらレイテンシが気になって眠れない"], "クラウド_美術館": ["クラウド美術館 ―世界の名画がサーバーの中に―", "雲の上の美術館ガイド", "クラウドで作る仮想美術館 ―入場料はAPI代だけ―", "美術館をクラウド化したら入場者が100倍になった", "クラウド美術館構築記 ―テクノロジーとアートの融合―"], "クラウド_聴力": ["クラウドが聴力を救う ―遠隔聴覚支援の最前線―", "聴力テストをクラウド化したら衝撃の結果が出た", "クラウド聴力 ―ネット越しに聴こえる新しい世界―", "クラウドで聴力トレーニング ―サーバーが耳を鍛える―", "聴力×クラウド ―テクノロジーが拓く音の世界―"], "クラウド_芸術": ["クラウドは芸術である ―美しいアーキテクチャ入門―", "芸術的クラウド ―システム構成図はキャンバスだ―", "クラウドと芸術の危険な関係", "クラウド芸術論 ―エンジニアに美意識は必要か―", "芸術としてのクラウド設計 ―機能美を追求する技術者たち―"], "クラウド_飲食店": ["クラウドで飲食店革命 ―厨房からサーバーへ―", "飲食店のクラウド化 ―ラーメン屋がAWSに出会った日―", "クラウド飲食店 ―注文はAPIで、会計はサーバーレスで―", "町の定食屋がクラウド化したら行列ができた", "クラウド×飲食店 ―テクノロジーが変える「いらっしゃいませ」―"], "コスト削減_飲食店": ["飲食店コスト削減の極意 ―ケチと呼ばないで―", "コスト削減で飲食店が復活した7つの方法", "飲食店コスト削減 ―食材費を削らずに利益を出す魔法―", "赤字飲食店がコスト削減で奇跡の復活を遂げた話", "飲食店のムダを斬る ―笑えるほど効くコスト削減術―"], "システム開発_コミュニティ": ["システム開発コミュニティの歩き方 ―仲間を見つけろ―", "コミュニティ駆動開発 ―みんなで作るシステムの未来―", "システム開発×コミュニティ ―孤独なプログラマーの社交場―", "コミュニティがシステム開発を救う日", "システム開発勉強会コミュニティの作り方と育て方"], "システム開発_セッション": ["システム開発セッション ―エンジニアが本音で語る夜―", "セッションから始まるシステム開発 ―雑談がイノベーションを生む―", "システム開発とジャムセッション ―即興力がプロジェクトを救う―", "システム開発の裏セッション ―会議室では言えない話―", "セッション駆動開発 ―対話から生まれるシステム設計―"], "システム開発_傾聴": ["システム開発に傾聴を持ち込んだら炎上が消えた", "傾聴するシステムエンジニア ―要件定義は聴くことから―", "システム開発×傾聴 ―顧客の声をコードに変える技術―", "傾聴力で救うシステム開発 ―デスマーチを防ぐ聴く力―", "システム開発の傾聴革命 ―聞き上手なSEが最強である理由―"], "システム開発_即興": ["即興システム開発 ―仕様書なしで動くシステムを作った男―", "システム開発の即興力 ―想定外を楽しむプログラマー―", "即興で乗り切るシステム開発 ―アジャイルの究極形―", "システム開発×即興 ―デスマーチをアドリブで回避する技術―", "即興コーディング ―その場のひらめきがシステムを救う―"], "システム開発_楽器": ["システム開発と楽器の意外な共通点", "楽器を弾くエンジニアは良いコードを書く", "システム開発を楽器に例えたら全部わかった", "楽器演奏がシステム開発スキルを爆上げする理由", "プログラミングと楽器 ―両方極めたエンジニアの思考法―"], "システム開発_芸術": ["システム開発は芸術である ―美しいコードの条件―", "芸術的システム開発 ―設計に美を求めるエンジニアたち―", "システム開発×芸術 ―コードはキャンバス、バグは抽象画―", "芸術としてのシステム設計 ―機能美を追求する技術―", "システム開発に芸術的センスが必要な7つの理由"], "タスク管理_アドリブ": ["タスク管理にアドリブを持ち込んだらカオスになった", "アドリブタスク管理 ―計画なんて飾りですよ―", "タスク管理×アドリブ ―予定通りにいかないことを楽しむ技術―", "アドリブ力で回すタスク管理 ―ガチガチ計画をやめてみた―", "タスクは管理するな、アドリブで乗り切れ"], "タスク管理_アート": ["タスク管理をアートにする ―美しいToDoリストの作り方―", "アート的タスク管理 ―創造性を殺さない整理術―", "タスク管理×アート ―締め切りを芸術に変える方法―", "アーティストのタスク管理術 ―自由と締め切りの狭間で―", "タスクをアートに変える ―仕事を楽しくする管理術―"], "タスク管理_インプロビゼーション": ["タスク管理にインプロビゼーションを ―即興力で仕事を回す―", "インプロビゼーション的タスク管理 ―台本なしで成果を出す―", "タスク管理×インプロ ―計画を捨てたら生産性が上がった―", "即興タスク管理 ―インプロビゼーションで仕事を乗り切る―", "インプロ思考でタスク管理を革新する"], "タスク管理_セッション": ["タスク管理セッション ―チームで奏でるプロジェクト進行―", "セッション型タスク管理 ―会議を音楽のように回す―", "タスク管理をセッションにしたら全員がノッてきた", "セッションで回すタスク管理 ―対話から生まれる最適解―", "タスク管理×セッション ―チームワークを即興で奏でる―"], "タスク管理_リスニング": ["タスク管理にリスニング力は必要か", "聴く力でタスク管理が変わる ―リスニング革命―", "タスク管理×リスニング ―聞き上手なマネージャーの秘密―", "リスニング型タスク管理 ―部下の声を聞いたら残業が消えた―", "タスクの声を聴け ―リスニング力が生産性を上げる―"], "タスク管理_リズム": ["タスク管理はリズムだ ―仕事のビートを刻め―", "リズム型タスク管理 ―仕事にグルーヴを持ち込む技術―", "タスク管理×リズム ―テンポよく仕事を片付ける方法―", "仕事のリズムを整えるタスク管理術", "タスクにリズムを ―ノリで乗り切る仕事術―"], "タスク管理_傾聴": ["傾聴するタスク管理者 ―聴く力がプロジェクトを救う―", "タスク管理に傾聴を持ち込んだら残業がゼロになった", "傾聴型タスク管理 ―部下の声に耳を傾ける技術―", "タスク管理×傾聴 ―聞き上手なPMが最強な理由―", "傾聴から始めるタスク管理革命"], "タスク管理_即興": ["即興タスク管理 ―計画は捨てろ、直感で動け―", "タスク管理×即興 ―アドリブ力がプロジェクトを加速する―", "即興で回すタスク管理術 ―ガントチャートは飾りだ―", "タスク管理をやめて即興で生きる", "即興的タスク管理 ―その場のひらめきで仕事を片付ける―"], "タスク管理_店員評価": ["タスク管理で変わる店員評価 ―接客をKPIで測る時代―", "店員評価をタスク管理したら売上が爆上がりした", "タスク管理×店員評価 ―見える化で接客力アップ―", "店員のタスクを管理したら笑顔が数値化された", "タスク管理型店員評価 ―飲食業のDX最前線―"], "タスク管理_絵画鑑賞": ["タスク管理と絵画鑑賞の意外な共通点", "絵画鑑賞でタスク管理力が上がる不思議な話", "タスク管理×絵画鑑賞 ―美術館で学ぶ優先順位の付け方―", "名画に学ぶタスク管理術 ―ゴッホは締め切りを守れたか―", "タスク管理疲れに効く絵画鑑賞のすすめ"], "タスク管理_耳": ["耳で管理するタスク術 ―聴覚タスク管理入門―", "タスク管理は耳が9割", "耳を澄ませばタスクが見える ―聴覚マネジメントの秘密―", "タスク管理×耳 ―音で仕事を整理する新メソッド―", "耳から入るタスク管理 ―聴いて覚える仕事術―"], "タスク管理_聴力": ["タスク管理に聴力は関係あるのか ―意外な相関関係―", "聴力を鍛えればタスク管理がうまくなる理論", "タスク管理×聴力 ―聞こえない声を拾う技術―", "聴力とタスク管理の不思議な関係", "タスクの音を聴け ―聴力が生産性を決める―"], "タスク管理_芸術": ["タスク管理は芸術である ―美しいToDoリストの美学―", "芸術的タスク管理 ―仕事にアートを持ち込む―", "タスク管理×芸術 ―スケジュール表はキャンバスだ―", "芸術としてのタスク管理 ―美しく仕事を片付ける技術―", "タスクを芸術に昇華する ―創造的仕事術―"], "タスク管理_音楽理論": ["音楽理論で解くタスク管理 ―和音のように仕事を組む―", "タスク管理×音楽理論 ―仕事にハーモニーを―", "音楽理論がタスク管理を救う ―リズムと調和の仕事術―", "タスク管理を音楽理論で設計したら仕事が楽しくなった", "コード進行で学ぶタスク管理 ―不協和音を解決する―"], "タスク管理_音程": ["タスク管理と音程の意外な関係", "音程感覚でタスクの優先度を決める", "タスク管理×音程 ―仕事の高低差を音で整理する―", "音程が合えばタスクもうまくいく理論", "タスクに音程を付けたら仕事が捗った話"], "タスク管理_飲食店": ["飲食店タスク管理の極意 ―厨房はタスクの嵐―", "飲食店のタスク管理 ―注文・調理・配膳を完璧に回す―", "タスク管理×飲食店 ―カオスな現場を整理する技術―", "飲食店のタスク管理術 ―ピーク時の修羅場を乗り切る―", "飲食店をタスク管理で救う ―廃業寸前からの復活劇―"], "チケット駆動開発_リズム": ["チケット駆動開発のリズム ―チームのビートを刻め―", "リズムで回すチケット駆動開発", "チケット駆動開発×リズム ―スプリントにグルーヴを―", "チケットを切るリズム ―開発のテンポを上げる技術―", "チケット駆動リズム ―アジャイルをノリで回す方法―"], "チケット駆動開発_傾聴": ["チケット駆動開発に傾聴を ―要望の裏を読む力―", "傾聴型チケット駆動開発 ―ユーザーの声を正しくチケットにする―", "チケット駆動開発×傾聴 ―聞き上手なPMが書く最高のチケット―", "チケットの裏にある声を傾聴する技術", "傾聴から始めるチケット駆動開発入門"], "チケット駆動開発_即興": ["即興チケット駆動開発 ―チケットなんて後から切れ―", "チケット駆動開発×即興 ―計画通りにいかない開発を楽しむ―", "即興で回すチケット駆動開発 ―アドリブが最高の設計を生む―", "チケット駆動開発の即興力 ―想定外のバグをアドリブで潰す―", "即興チケット術 ―その場で切って即クローズ―"], "チケット駆動開発_店員評価": ["チケット駆動で店員評価 ―接客をJIRAで管理する時代―", "店員評価をチケット駆動で回してみた", "チケット駆動開発×店員評価 ―笑顔もバックログに入れますか―", "チケット駆動店員評価 ―「いらっしゃいませ」をスプリントに組む―", "店員評価チケット駆動化計画 ―飲食業のアジャイル革命―"], "チケット駆動開発_接客マナー": ["接客マナーをチケット駆動で改善する ―礼儀もバックログ―", "チケット駆動開発×接客マナー ―おもてなしをスプリントで回す―", "接客マナーチケット駆動化 ―「ありがとうございました」のプルリクエスト―", "チケットで学ぶ接客マナー ―JIRAに登録された笑顔―", "接客マナー改善チケット ―優先度S：お客様に挨拶する―"], "チケット駆動開発_絵画鑑賞": ["チケット駆動開発と絵画鑑賞の共通点", "絵画鑑賞をチケット駆動で管理してみた", "チケット駆動開発×絵画鑑賞 ―名画鑑賞もバックログで―", "チケットで巡る美術展 ―鑑賞スプリントの始め方―", "チケット駆動絵画鑑賞 ―モナリザのステータスは完了―"], "チケット駆動開発_美術館": ["美術館をチケット駆動で運営してみた", "チケット駆動開発×美術館 ―展示企画をスプリントで回す―", "美術館のJIRA ―チケット駆動で名画を管理する―", "チケット駆動美術館 ―入場チケットとJIRAチケットの融合―", "美術館運営にチケット駆動開発を持ち込んだ学芸員の話"], "チケット駆動開発_耳": ["チケット駆動開発は耳で決まる ―聴く力がチケットの質を変える―", "耳を澄ませばチケットが見える", "チケット駆動開発×耳 ―ユーザーの声を拾うエンジニアの耳―", "耳の良いエンジニアが書くチケットは一味違う", "チケット駆動開発で耳を鍛える ―傾聴型開発入門―"], "チケット駆動開発_聴力": ["チケット駆動開発に聴力は必要か", "聴力で変わるチケットの質 ―聞こえない要望を拾う技術―", "チケット駆動開発×聴力 ―エンジニアの耳を鍛える―", "聴力テストで分かるチケット駆動開発の適性", "チケットの声が聞こえますか ―聴力とアジャイルの不思議な関係―"], "チケット駆動開発_芸術": ["チケット駆動開発は芸術だ ―美しいバックログの条件―", "芸術的チケット駆動開発 ―JIRAボードはキャンバスだ―", "チケット駆動開発×芸術 ―スプリントに美を求めて―", "チケット駆動開発を芸術に昇華する方法", "芸術としてのチケット管理 ―美しいチケットの書き方―"], "チケット駆動開発_飲食店": ["飲食店にチケット駆動開発を持ち込んだらどうなるか", "チケット駆動飲食店 ―注文はJIRAで、配膳はスプリントで―", "チケット駆動開発×飲食店 ―厨房のカンバンボード―", "飲食店の注文をチケット駆動で回してみた", "チケット駆動開発で飲食店を救う ―カオスな厨房の整理術―"], "デイトレード_アート": ["デイトレードはアートだ ―チャートに美を見出す投資家―", "アート的デイトレード ―直感と美意識で株を買う―", "デイトレード×アート ―チャート分析は抽象画の鑑賞に似ている―", "デイトレーダーのアート思考 ―美しいトレードの条件―", "デイトレードという名のアート ―売買は表現である―"], "デイトレード_リスニング": ["デイトレードに効くリスニング力 ―市場の声を聴け―", "リスニング型デイトレード ―ニュースを耳で拾う投資術―", "デイトレード×リスニング ―聴く力が利益を生む―", "デイトレーダーのリスニング術 ―雑音と本音を聴き分ける―", "市場の声をリスニングするデイトレーダーの日常"], "デイトレード_リズム": ["デイトレードはリズムだ ―相場のビートに乗れ―", "リズム型デイトレード ―売買のテンポが利益を決める―", "デイトレード×リズム ―市場のグルーヴを感じる投資術―", "デイトレーダーのリズム感 ―秒単位のビートを刻む―", "相場のリズムを掴め ―デイトレードの波乗り術―"], "デイトレード_人柄": ["デイトレードは人柄で決まる ―性格別投資スタイル―", "人柄が出るデイトレード ―あなたの性格、チャートに出てます―", "デイトレード×人柄 ―良い人は良いトレーダーになれるか―", "デイトレーダーの人柄図鑑 ―儲かる性格、損する性格―", "人柄投資術 ―デイトレードに現れるあなたの本性―"], "デイトレード_個人レッスン": ["デイトレード個人レッスン ―マンツーマンで学ぶ株の極意―", "個人レッスンで始めるデイトレード入門", "デイトレード×個人レッスン ―師匠と弟子の投資道―", "デイトレード個人レッスンで人生が変わった話", "マンツーマンデイトレード ―個人レッスンが最速の近道―"], "デイトレード_傾聴": ["デイトレーダーの傾聴力 ―市場の囁きを聞き逃すな―", "傾聴するデイトレーダー ―チャートが語る物語を聴く―", "デイトレード×傾聴 ―株価の声に耳を傾ける投資術―", "傾聴型デイトレード ―ノイズと本音を聴き分ける―", "デイトレードに傾聴を持ち込んだら利益が3倍になった"], "デイトレード_即興": ["即興デイトレード ―相場はアドリブだ―", "デイトレード×即興 ―計画を捨てた瞬間、利益が出た―", "即興力で勝つデイトレード ―その場の判断が全て―", "デイトレーダーの即興力 ―相場のアドリブに乗る技術―", "即興トレード ―予測不能な市場を楽しむ投資術―"], "デイトレード_店員評価": ["デイトレーダーの店員評価力 ―人を見る目は株も見る―", "店員評価でデイトレードがうまくなる理論", "デイトレード×店員評価 ―観察力が利益を生む不思議な関係―", "デイトレーダーが店員を評価したら投資眼が上がった", "店員評価型デイトレード ―人間観察力は最強の投資スキル―"], "デイトレード_絵画鑑賞": ["デイトレーダーの絵画鑑賞 ―チャートと名画の共通点―", "絵画鑑賞がデイトレードを上達させる理由", "デイトレード×絵画鑑賞 ―パターン認識は美術館で鍛えろ―", "チャートは絵画だ ―デイトレーダーの美術鑑賞記―", "絵画鑑賞力で勝つデイトレード入門"], "デイトレード_美術館": ["デイトレーダー、美術館に行く", "美術館で鍛えるデイトレード眼", "デイトレード×美術館 ―チャートパターンは名画で学べ―", "デイトレーダーが美術館に通い始めた理由", "美術館帰りのデイトレーダー ―審美眼が投資を変える―"], "デイトレード_耳": ["デイトレードは耳で勝つ ―聴覚投資術入門―", "耳の良いデイトレーダー ―市場の異変を音で察知する―", "デイトレード×耳 ―聞こえない情報を拾う投資テクニック―", "耳を制する者はデイトレードを制す", "デイトレーダーの耳 ―音で読む株式市場―"], "デイトレード_聴力": ["デイトレードに聴力は関係あるのか ―意外な研究結果―", "聴力が良いデイトレーダーは儲かるという仮説", "デイトレード×聴力 ―市場の微かな音を聴く力―", "デイトレーダーの聴力トレーニング", "聴力で差がつくデイトレード ―耳が良ければ勝てる時代―"], "デイトレード_芸術": ["デイトレードは芸術である ―美しいエントリーの条件―", "芸術的デイトレード ―トレードに美を求めて―", "デイトレード×芸術 ―チャートは現代アートだ―", "デイトレーダーの芸術論 ―売買は自己表現である―", "芸術としてのデイトレード ―利益よりも美しさを追う投資家―"], "デイトレード_飲食店": ["デイトレーダーが飲食店を開いたら", "飲食店経営とデイトレードの共通点7つ", "デイトレード×飲食店 ―仕入れは投資、メニューはポートフォリオ―", "飲食店オーナー兼デイトレーダーの二刀流人生", "デイトレーダーの飲食店 ―利確タイミングは閉店時間―"], "データ処理_感性": ["データ処理に感性は必要か ―数字の向こうにある物語―", "感性型データ処理 ―直感とアルゴリズムの融合―", "データ処理×感性 ―冷たい数字に温かさを―", "感性を活かすデータ処理術 ―分析に心を込める―", "データ処理の感性 ―エンジニアに必要な美意識―"], "データ処理_感覚": ["データ処理は感覚だ ―数字を肌で感じる技術―", "感覚型データ処理 ―直感で異常値を見抜く―", "データ処理×感覚 ―五感で読み解くビッグデータ―", "データ処理の感覚を鍛える ―数字音痴からの脱出―", "感覚データ処理入門 ―ロジックの先にあるひらめき―"], "バナー広告_サックス": ["バナー広告にサックスを載せたらクリック率が爆上がりした", "サックス奏者のためのバナー広告入門", "バナー広告×サックス ―音が聞こえるバナーの作り方―", "サックスの魔力がバナー広告を救う", "バナー広告とサックス ―なぜ楽器は人の目を引くのか―"], "パフォーマンスチューニング_楽器": ["楽器のパフォーマンスチューニング ―音と速度の最適化―", "パフォーマンスチューニング×楽器 ―チューニングは万物に通ず―", "楽器とサーバーのチューニング ―共振する最適化の美学―", "パフォーマンスチューニングは楽器のチューニングに似ている", "楽器奏者に学ぶパフォーマンスチューニングの極意"], "プロファイリング_コミュニティ": ["コミュニティをプロファイリングする ―メンバーの行動パターン分析―", "プロファイリング×コミュニティ ―参加者の本音を見抜く技術―", "コミュニティプロファイリング入門 ―誰がコミュニティを動かしているか―", "プロファイリングで分かるコミュニティの真の姿", "コミュニティメンバーをプロファイリングしてみた"], "プロファイリング_傾聴": ["プロファイリング×傾聴 ―聴くことで人を読む技術―", "傾聴とプロファイリングの融合 ―人を深く理解する方法―", "プロファイリングに傾聴を加えたら精度が跳ね上がった", "傾聴型プロファイリング ―話を聞くだけで相手が分かる―", "プロファイリングの傾聴力 ―聴く力は最強の分析ツール―"], "プロファイリング_即興": ["即興プロファイリング ―初対面3秒で相手を読む―", "プロファイリング×即興 ―アドリブで人を見抜く技術―", "即興力で磨くプロファイリング ―直感と分析の融合―", "プロファイリングの即興力 ―その場で相手を読む技術―", "即興プロファイラー ―瞬時に人を見抜く人々の秘密―"], "ボトルネック_アドリブ": ["ボトルネックをアドリブで解消する技術", "アドリブで突破するボトルネック ―想定外の解決法―", "ボトルネック×アドリブ ―詰まったらその場で考えろ―", "ボトルネック解消のアドリブ力 ―マニュアルに頼らない問題解決―", "アドリブボトルネック解消術 ―即興で道を開く―"], "ボトルネック_リスニング": ["ボトルネックはリスニングで見つかる ―組織の詰まりを聴く―", "リスニングで発見するボトルネック ―聞けば分かる課題の在処―", "ボトルネック×リスニング ―現場の声を聴けば解決策が見える―", "リスニング型ボトルネック解消術", "ボトルネックの音を聴け ―耳で探す業務の詰まり―"], "ボトルネック_個人レッスン": ["ボトルネック解消個人レッスン ―あなたの弱点をマンツーマンで潰す―", "個人レッスンでボトルネックを突破する", "ボトルネック×個人レッスン ―プロに詰まりを診てもらう―", "ボトルネック診断個人レッスン ―一人で悩まず師匠に聞け―", "個人レッスン型ボトルネック解消 ―マンツーマンで課題を潰す―"], "ボトルネック_楽器": ["楽器のボトルネック ―上達を阻む壁の正体―", "ボトルネック×楽器 ―練習の詰まりを科学する―", "楽器演奏のボトルネックを突破する7つの方法", "ボトルネック奏法 ―ギターのボトルネックはカッコいい方の話―", "楽器上達のボトルネックを見つけて壊す技術"], "ボトルネック_絵画鑑賞": ["絵画鑑賞のボトルネック ―なぜ名画の前で立ち止まれないのか―", "ボトルネック×絵画鑑賞 ―鑑賞力を阻む壁を壊す―", "絵画鑑賞力のボトルネックを突破する", "ボトルネックを超える絵画鑑賞術 ―見えていなかったものが見える―", "美術鑑賞のボトルネック解消法"], "ボトルネック_芸術": ["芸術のボトルネック ―創造力の詰まりを解消する―", "ボトルネック×芸術 ―表現の壁を突破する技術―", "芸術家のボトルネック ―スランプとの付き合い方―", "ボトルネック芸術論 ―制約こそが創造の源泉―", "芸術的ボトルネック ―詰まりの美学―"], "ボトルネック_音楽理論": ["音楽理論のボトルネック ―ここで挫折する人が9割―", "ボトルネック×音楽理論 ―理論の壁を乗り越える方法―", "音楽理論のボトルネックを3日で突破する", "ボトルネック解消型音楽理論 ―つまずきポイントを先回りで潰す―", "音楽理論のボトルネックは実はたった3つしかない"], "リアルタイム_ジャズ": ["リアルタイムジャズ ―生で聴く即興の衝撃―", "ジャズはリアルタイムだ ―その瞬間にしか存在しない音楽―", "リアルタイム×ジャズ ―遅延ゼロの即興演奏論―", "リアルタイムジャズ配信入門 ―ライブの臨場感をネットに乗せる―", "リアルタイムにジャズを語る ―今この瞬間の音楽批評―"], "レイテンシ_アート": ["レイテンシのアート ―遅延を芸術に変える方法―", "アートとしてのレイテンシ ―待ち時間は美しい―", "レイテンシ×アート ―遅延が生むクリエイティブな表現―", "レイテンシアート入門 ―遅延を味方にする創作術―", "遅延の美学 ―レイテンシをアートに昇華する―"], "レイテンシ_楽器": ["楽器とレイテンシ ―遅延が演奏を殺す―", "レイテンシ×楽器 ―デジタル楽器の遅延との戦い―", "楽器のレイテンシ問題を解決する ―ミリ秒の遅れが命取り―", "レイテンシを超える楽器演奏 ―遅延を感じさせない技術―", "楽器演奏のレイテンシ ―人間はどこまで遅延に気づくか―"], "定量評価_感性": ["感性を定量評価する ―数値化できない美を数値化する―", "定量評価×感性 ―直感を数字に変える技術―", "感性の定量評価入門 ―「なんとなく良い」を科学する―", "定量評価で磨く感性 ―数字が美意識を育てる―", "感性を定量評価してみたら意外な結果が出た"], "定量評価_感覚": ["感覚を定量評価する ―「何となく」を数値化する技術―", "定量評価×感覚 ―五感のスコアリング入門―", "感覚の定量評価 ―勘を科学的に検証する方法―", "定量評価で鍛える感覚 ―数字が直感を磨く―", "感覚の数値化 ―定量評価が変える意思決定―"], "投資_アート": ["投資としてのアート ―名画は株より儲かるのか―", "アート投資入門 ―絵を買って資産を増やす方法―", "投資×アート ―キャンバスがポートフォリオになる日―", "アート投資の衝撃 ―なぜ億万長者は絵を買うのか―", "投資家のためのアート入門 ―美を買う、富を得る―"], "投資_コミュニティ": ["投資コミュニティの歩き方 ―仲間がいれば株も怖くない―", "コミュニティ投資術 ―みんなで学ぶ資産形成―", "投資×コミュニティ ―群れると賢くなるのか愚かになるのか―", "投資コミュニティの闇と光 ―煽りと学びの境界線―", "コミュニティで始める投資入門 ―一人で始めるな―"], "投資_セッション": ["投資セッション ―トレーダーが本音で語る夜―", "セッション型投資 ―対話から生まれる投資判断―", "投資×セッション ―投資家たちのジャムセッション―", "投資セッション入門 ―仲間との対話が利益を生む―", "セッションで磨く投資眼 ―一人で考えるのをやめろ―"], "投資_リズム": ["投資はリズムだ ―市場のビートに乗れ―", "リズム投資術 ―売買のテンポが利益を決める―", "投資×リズム ―相場のグルーヴを感じる投資家たち―", "投資のリズムを掴め ―タイミングが全て―", "リズムで勝つ投資 ―市場の波に乗る技術―"], "投資_人柄": ["投資は人柄で決まる ―あなたの性格が利益を左右する―", "人柄投資術 ―良い人は良い投資家になれるか―", "投資×人柄 ―性格診断で分かるあなたの投資タイプ―", "投資家の人柄図鑑 ―儲かる人、損する人の性格―", "人柄が出る投資 ―チャートにあなたの性格が映る―"], "投資_感性": ["投資に感性は必要か ―直感で株を買う技術―", "感性投資術 ―数字の裏にある物語を読む―", "投資×感性 ―美意識が利益を生む時代―", "感性で勝つ投資 ―AIに負けない人間の直感力―", "投資家の感性 ―数字の海で美を見出す力―"], "投資_感覚": ["投資は感覚だ ―勘を磨けば利益は出る―", "感覚投資術 ―五感で読み解く株式市場―", "投資×感覚 ―理論より直感が勝つ瞬間―", "感覚で勝つ投資家たち ―第六感の正体―", "投資感覚を鍛える ―なぜあの人はいつも勝てるのか―"], "投資_楽器": ["投資と楽器の共通点 ―両方極めた人の思考法―", "楽器を弾く投資家は儲かるのか", "投資×楽器 ―練習と忍耐が利益を生む―", "楽器演奏で鍛える投資脳", "投資家と楽器 ―ポートフォリオとアンサンブルの共通点―"], "投資_耳": ["投資は耳で勝つ ―市場の囁きを聞き逃すな―", "耳の良い投資家が儲かる理由", "投資×耳 ―聴覚で読む株式市場―", "投資家の耳 ―ノイズの中からシグナルを聴く―", "耳を制する者は投資を制す"], "投資_芸術": ["投資は芸術である ―美しいポートフォリオの条件―", "芸術的投資術 ―トレードに美を求めて―", "投資×芸術 ―お金と美の不思議な関係―", "芸術としての投資 ―利益よりも美しさを追う投資家たち―", "投資家と芸術家の共通点 ―創造力がお金を生む―"], "投資_飲食店": ["飲食店投資の極意 ―食べて儲ける投資術―", "投資×飲食店 ―なぜ投資家は飲食店を開きたがるのか―", "飲食店投資で失敗しない方法 ―元トレーダーの飲食経営―", "投資家が飲食店を始めたら ―株と料理の二刀流人生―", "飲食店は最高の投資先か ―数字で検証する飲食店経営―"], "損切り_リズム": ["損切りのリズム ―切るタイミングは音楽に学べ―", "リズムで学ぶ損切り術 ―テンポよく損を切る技術―", "損切り×リズム ―ビートに乗って潔く手放す―", "損切りにはリズムがある ―早すぎず遅すぎずの拍子―", "リズム損切り ―市場のテンポに合わせて切る技術―"], "株_アート": ["株はアートだ ―チャートは抽象画である―", "アート的株式投資 ―美意識で銘柄を選ぶ―", "株×アート ―ウォール街と美術館の交差点―", "株とアートの二刀流投資 ―どちらが儲かるか―", "株式投資をアートに昇華する方法"], "株_コミュニティ": ["株コミュニティの歩き方 ―煽りに負けない投資仲間の作り方―", "コミュニティで株を学ぶ ―一人で投資するのをやめろ―", "株×コミュニティ ―みんなの意見は参考になるのか―", "株コミュニティの闇と光", "コミュニティが株の利益を左右する理由"], "株_感覚": ["株は感覚だ ―数字じゃなく肌で感じろ―", "感覚で買う株 ―直感投資術入門―", "株×感覚 ―第六感が銘柄選びを変える―", "株の感覚を鍛える ―なぜプロは数字を見ないで買えるのか―", "感覚株式投資 ―勘を科学する―"], "株_美術館": ["株と美術館 ―投資家はなぜ美術館に通うのか―", "美術館で磨く株式投資眼", "株×美術館 ―名画とチャートのパターン認識―", "美術館帰りの株式投資 ―審美眼が利益を生む―", "株式投資家の美術館散歩 ―アートが教える市場の真理―"], "株_芸術": ["株は芸術である ―美しいトレードの条件―", "芸術的株式投資 ―チャートに美を見出す―", "株×芸術 ―売買は自己表現である―", "株式投資の芸術性 ―なぜ名トレーダーはアーティストに似ているのか―", "芸術としての株式投資入門"], "株_飲食店": ["株で儲けて飲食店を開く ―投資家の夢を叶える方法―", "飲食店株投資の極意 ―食べて儲ける銘柄選び―", "株×飲食店 ―トレーダーが厨房に立った日―", "株と飲食店の二刀流 ―投資家兼料理人の日常―", "飲食店銘柄で株を始めよう ―食通の投資術―"], "株式市場_コミュニティ": ["株式市場コミュニティの歩き方 ―情報戦を生き抜く―", "コミュニティが動かす株式市場", "株式市場×コミュニティ ―集合知は相場を読めるのか―", "株式市場コミュニティの光と闇 ―煽りと英知の境界―", "コミュニティ型株式市場分析 ―みんなの意見は正しいか―"], "株式市場_サックス": ["株式市場とサックス ―吹けば上がる銘柄は存在するか―", "サックス奏者の株式市場分析", "株式市場×サックス ―ジャズの即興と相場の即興―", "サックスを吹きながら株を買う男の話", "株式市場のサックス ―市場の音色を奏でる投資家―"], "株式市場_リズム": ["株式市場のリズム ―相場のビートを読み解く―", "リズムで読む株式市場 ―テンポが分かれば利益が出る―", "株式市場×リズム ―市場にはグルーヴがある―", "株式市場のリズムを掴め ―周期性で儲ける投資術―", "リズム分析で株式市場を攻略する"], "株式市場_感覚": ["株式市場は感覚で読め ―数字の裏にある気配―", "感覚型株式市場分析 ―勘を数値化する技術―", "株式市場×感覚 ―五感で読み解く相場の動き―", "株式市場の感覚を鍛える ―プロが教える相場勘―", "感覚で勝つ株式市場 ―AIに負けない直感力―"], "株式市場_芸術": ["株式市場は芸術だ ―チャートは現代アートである―", "芸術的株式市場分析 ―相場に美を見出す―", "株式市場×芸術 ―マーケットの美学―", "株式市場を芸術的に読む方法", "芸術としての株式市場 ―数字の海に咲く美―"], "画像生成_アート": ["画像生成アートの衝撃 ―AIが描く未来の美術史―", "画像生成×アート ―人間のアーティストは生き残れるか―", "画像生成アート入門 ―プロンプトで名画を超えろ―", "画像生成がアートを殺す日、アートを救う日", "画像生成時代のアート ―創造力の定義が変わる―"], "画像生成_感性": ["画像生成に感性は必要か ―プロンプトに宿る美意識―", "感性×画像生成 ―直感で紡ぐビジュアルの魔法―", "画像生成の感性を磨く ―AIに美を教える技術―", "感性型画像生成 ―心で描くAIアート―", "画像生成時代の感性 ―機械に奪えない美意識―"], "画像生成_耳": ["画像生成と耳の不思議な関係 ―音を画像に変換する技術―", "耳で画像を生成する ―聴覚と視覚の融合―", "画像生成×耳 ―聞こえた音を絵にする―", "耳から画像生成 ―サウンドビジュアライゼーションの新時代―", "画像生成は耳が良い人ほどうまい説"], "画像生成_芸術": ["画像生成は芸術か ―AIクリエイションの境界線―", "芸術的画像生成 ―プロンプトエンジニアはアーティストか―", "画像生成×芸術 ―テクノロジーが問う「芸術とは何か」―", "画像生成が芸術を再定義する日", "芸術としての画像生成 ―AIが描く美の新基準―"], "脱Excel_即興": ["脱Excel即興術 ―スプレッドシートを捨てよ、アドリブで行こう―", "即興で脱Excelする技術 ―今すぐExcelを閉じろ―", "脱Excel×即興 ―Excelなしでその場を乗り切る方法―", "脱Excelの即興力 ―代替ツールをアドリブで使いこなす―", "即興脱Excel ―明日からExcel禁止と言われたら―"], "証券会社_コミュニティ": ["証券会社コミュニティの歩き方 ―投資仲間が見つかる場所―", "コミュニティが変える証券会社の未来", "証券会社×コミュニティ ―なぜ投資家は集まりたがるのか―", "証券会社のコミュニティ戦略 ―顧客を仲間にする方法―", "証券会社コミュニティ活用術 ―孤独な投資からの脱出―"], "証券取引所_サックス": ["証券取引所でサックスを吹く男", "サックスと証券取引所 ―市場の音色を奏でる―", "証券取引所×サックス ―取引フロアに響くジャズ―", "証券取引所のサックス奏者 ―ウォール街のジャズマン―", "サックスを吹く証券マンの壮絶な人生"], "証券取引所_ジャズ": ["証券取引所のジャズ ―マーケットは即興演奏である―", "ジャズで読む証券取引所 ―相場のスウィング―", "証券取引所×ジャズ ―取引はセッションだ―", "ジャズと証券取引所の意外な共通点7つ", "証券取引所をジャズに例えたら全部わかった"], "課題管理_リズム": ["課題管理のリズム ―仕事のビートを整えろ―", "リズムで回す課題管理 ―テンポよく片付ける技術―", "課題管理×リズム ―グルーヴに乗れば課題は消える―", "リズム型課題管理 ―仕事にノリを持ち込む―", "課題管理にリズムを ―ドラマーに学ぶ進捗管理―"], "課題管理_飲食店": ["飲食店の課題管理 ―厨房のカオスを整理する技術―", "課題管理×飲食店 ―注文ミスを根絶する方法―", "飲食店課題管理術 ―クレームをゼロにした店長の秘密―", "飲食店の課題を管理したら売上が倍になった", "課題管理で飲食店を救う ―閉店寸前からのV字回復―"], "速度向上_ソルフェージュ": ["速度向上ソルフェージュ ―音感を最速で身につける方法―", "ソルフェージュの速度向上 ―初見演奏を加速する技術―", "速度向上×ソルフェージュ ―音楽の読み書きを爆速にする―", "ソルフェージュ速度向上ドリル ―1日10分で音感が変わる―", "速度向上型ソルフェージュ入門 ―遅い音読を卒業する―"], "進捗管理_アート": ["進捗管理をアートにする ―美しいガントチャートの描き方―", "アート的進捗管理 ―創造的プロジェクト管理術―", "進捗管理×アート ―スケジュール表はキャンバスだ―", "アーティストの進捗管理 ―自由と締め切りの間で―", "進捗管理もアートだ ―仕事に美を持ち込む技術―"], "進捗管理_コミュニティ": ["コミュニティ型進捗管理 ―みんなで進捗を報告し合う―", "進捗管理×コミュニティ ―仲間がいれば進捗も出る―", "進捗管理コミュニティの作り方 ―孤独な進捗報告からの解放―", "コミュニティで進捗管理を楽しくする方法", "進捗管理をコミュニティで回したら残業が消えた"], "進捗管理_ジャズ": ["進捗管理はジャズだ ―即興で回すプロジェクト―", "ジャズ的進捗管理 ―計画通りにいかないことを楽しむ―", "進捗管理×ジャズ ―スウィングするスケジュール管理―", "ジャズから学ぶ進捗管理術 ―アドリブが許される組織―", "進捗管理とジャズの共通点 ―即興と調和の技術―"], "進捗管理_ソルフェージュ": ["進捗管理×ソルフェージュ ―音楽的リズムで進捗を刻む―", "ソルフェージュ型進捗管理 ―音符のように仕事を読む―", "進捗管理にソルフェージュを持ち込んだら仕事が楽しくなった", "ソルフェージュで学ぶ進捗管理の極意", "音楽の読み書きと進捗管理の不思議な共通点"], "進捗管理_リスニング": ["進捗管理にリスニング力が必要な理由", "リスニング型進捗管理 ―聴くことでプロジェクトが動く―", "進捗管理×リスニング ―チームの声を聴けば進捗が見える―", "リスニングで変わる進捗管理 ―聞き上手なPMの秘密―", "進捗の音を聴け ―リスニング力で遅延を防ぐ―"], "進捗管理_リズム": ["進捗管理はリズムだ ―仕事のビートを刻め―", "リズム型進捗管理 ―テンポよくプロジェクトを回す―", "進捗管理×リズム ―グルーヴに乗れば遅延は消える―", "リズムで回す進捗管理術", "進捗管理にリズムを ―ドラマーに学ぶスケジュール管理―"], "進捗管理_美術館": ["美術館の進捗管理 ―展覧会はこうして出来上がる―", "進捗管理×美術館 ―名画の展示準備を管理する―", "美術館に学ぶ進捗管理術 ―展覧会の裏側―", "美術館の進捗管理がすごい理由", "進捗管理を美術館で学ぶ ―アートと締め切りの世界―"], "金融_即興": ["金融の即興力 ―市場の想定外をアドリブで乗り切る―", "即興金融 ―マニュアルが通用しない瞬間―", "金融×即興 ―ウォール街のアドリブ力―", "金融マンの即興力 ―リーマンショックをアドリブで生き延びた男―", "即興で動く金融市場 ―計画通りにいかない世界の生き方―"], "金融_店員評価": ["金融機関の店員評価 ―窓口対応で決まる信頼と利益―", "店員評価で変わる金融サービス", "金融×店員評価 ―銀行の窓口対応を科学する―", "金融機関の店員評価革命 ―AIが採点する接客力―", "金融の店員評価 ―なぜあの銀行員は信頼されるのか―"], "金融_接客マナー": ["金融マンの接客マナー ―お金を扱う者の礼儀作法―", "金融×接客マナー ―信頼は挨拶から始まる―", "金融機関の接客マナー革命 ―堅い銀行が変わった日―", "接客マナーが金融の利益を左右する", "金融の接客マナー ―一流バンカーの振る舞い―"], "金融_演奏": ["金融と演奏の共通点 ―ハーモニーが利益を生む―", "演奏する金融マン ―ウォール街の音楽家たち―", "金融×演奏 ―市場のオーケストラに参加する方法―", "金融市場は演奏会だ ―各プレイヤーの役割―", "金融マンが演奏を始めたら仕事も良くなった話"], "金融_芸術": ["金融は芸術である ―美しいポートフォリオの条件―", "芸術的金融 ―数字に美を見出す銀行マンたち―", "金融×芸術 ―お金とアートの危険な関係―", "金融を芸術に昇華する ―数字の海に咲く美―", "芸術としての金融 ―美しい取引の条件―"], "金融_飲食店": ["金融マンが飲食店を開いたら ―元バンカーの転身物語―", "飲食店の金融リテラシー ―お金に強い店長になる―", "金融×飲食店 ―銀行マンが教える飲食店経営の数字―", "金融視点の飲食店経営 ―PLが読めれば店は潰れない―", "金融と飲食店の二刀流 ―昼はバンカー、夜はシェフ―"]};
+
+const tooltip = document.getElementById('tooltip');
+const overlay = document.getElementById('overlay');
+const overlayImg = document.getElementById('overlayImg');
+
+// Tooltip
+document.querySelectorAll('td.has-data').forEach(td => {
+  td.addEventListener('mouseenter', (e) => {
+    const key = td.dataset.key;
+    const t = titles[key];
+    if (!t) return;
+    const parts = key.split('_');
+    const t1 = parts[0], t2 = parts.slice(1).join('_');
+
+    let html = `<div class="tooltip-title">「${t1}」　×　「${t2}」</div>`;
+    html += `<div class="tooltip-subtitle">ハウツー本のタイトル（案）</div>`;
+    t.forEach(title => {
+      html += `<div class="tooltip-item">${title}</div>`;
+    });
+    tooltip.innerHTML = html;
+    tooltip.classList.add('visible');
+
+    positionTooltip(e);
+  });
+
+  td.addEventListener('mousemove', (e) => {
+    positionTooltip(e);
+  });
+
+  td.addEventListener('mouseleave', () => {
+    tooltip.classList.remove('visible');
+  });
+
+  // クリックでポップアップ
+  td.addEventListener('click', () => {
+    const key = td.dataset.key;
+    overlayImg.src = `job_private/${key}.png`;
+    overlay.classList.add('visible');
+  });
+});
+
+function positionTooltip(e) {
+  const tt = tooltip;
+  const pad = 15;
+  let x = e.clientX + pad;
+  let y = e.clientY + pad;
+
+  // 画面端からはみ出ないよう調整
+  const rect = tt.getBoundingClientRect();
+  if (x + rect.width > window.innerWidth) {
+    x = e.clientX - rect.width - pad;
+  }
+  if (y + rect.height > window.innerHeight) {
+    y = e.clientY - rect.height - pad;
+  }
+  if (x < 0) x = pad;
+  if (y < 0) y = pad;
+
+  tt.style.left = x + 'px';
+  tt.style.top = y + 'px';
+}
+
+// テーブルフォントサイズを画面幅に合わせて調整
+function adjustFontSize() {
+  const table = document.getElementById('mainTable');
+  if (!table) return;
+  const w = table.parentElement.offsetWidth;
+  const cols = 41;
+  const cellW = w / cols;
+  const fontSize = Math.max(8, Math.min(14, cellW * 0.25));
+  table.querySelectorAll('td, th').forEach(el => {
+    el.style.fontSize = fontSize + 'px';
+  });
+}
+window.addEventListener('resize', adjustFontSize);
+adjustFontSize();
+</script>
+</body>
+</html>

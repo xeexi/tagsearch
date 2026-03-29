@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>経験タグの Amazon 検索結果</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; font-family: sans-serif; }
+  body { display: flex; flex-direction: column; }
+
+  .page-title {
+    background: #222;
+    color: #f0f0f0;
+    margin: 0;
+    padding: 14px 20px 0;
+    font-size: 1.8em;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .description {
+    background: #2a2a2a;
+    color: #e0e0e0;
+    padding: 12px 20px 32px;
+    font-size: 14px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .description ul {
+    display: inline-block;
+    text-align: left;
+    border: 1px solid #888;
+    border-radius: 6px;
+    padding: 8px 20px;
+    margin-top: 24px;
+  }
+  .description p {
+    margin-bottom: 6px;
+  }
+  .description li {
+    margin-bottom: 2px;
+  }
+  .description ul {
+    margin: 24px 0 0;
+    padding-left: 20px;
+  }
+  .description li {
+    margin-bottom: 2px;
+  }
+
+  .tabs {
+    display: flex;
+    background: #333;
+    flex-shrink: 0;
+  }
+  .tabs button {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: #333;
+    color: #aaa;
+    font-size: 15px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: background 0.2s, color 0.2s;
+  }
+  .tabs button:hover {
+    background: #444;
+    color: #fff;
+  }
+  .tabs button.active {
+    background: #222;
+    color: #fff;
+    border-bottom-color: #4a9eff;
+  }
+
+  .iframe-container {
+    flex: 1;
+    position: relative;
+  }
+  .iframe-container iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none;
+  }
+  .iframe-container iframe.active {
+    display: block;
+  }
+</style>
+</head>
+<body>
+  <h1 class="page-title">経験タグの Amazon 検索結果</h1>
+  <div class="description">
+    <p>２つのタグを Amazon の「本」カテゴリで検索してみました。</p>
+    <p>※検索結果は本のタイトル以外にマッチしたものも含みます</p>
+    <ul>
+      <li>マウスカーソルを hover するとハウツー本のタイトル案を表示</li>
+      <li>クリックすると検索時の画面キャプチャを表示</li>
+    </ul>
+  </div>
+  <div class="tabs">
+    <button class="active" onclick="switchTab(0)">「職務経験」</button>
+    <button onclick="switchTab(1)">「人生経験」</button>
+    <button onclick="switchTab(2)">「職務経験」×「人生経験」</button>
+  </div>
+  <div class="iframe-container">
+    <iframe src="job_job.html" class="active"></iframe>
+    <iframe src="private_private.html"></iframe>
+    <iframe src="job_private.html"></iframe>
+  </div>
+  <script>
+    function switchTab(index) {
+      const buttons = document.querySelectorAll('.tabs button');
+      const iframes = document.querySelectorAll('.iframe-container iframe');
+      buttons.forEach(b => b.classList.remove('active'));
+      iframes.forEach(f => f.classList.remove('active'));
+      buttons[index].classList.add('active');
+      iframes[index].classList.add('active');
+    }
+  </script>
+</body>
+</html>
