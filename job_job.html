@@ -259,7 +259,7 @@
   <h1>「職務経験」×「職務経験」</h1>
 
   <div class="legend">
-    <span>0</span>
+    <span>0件</span>
     <div class="legend-bar"></div>
     <span id="legend-max"></span>
   </div>
@@ -306,7 +306,7 @@ function buildTable() {
     const c = parseInt(SEARCH_RESULTS[key].count);
     if (!isNaN(c) && c > maxCount) maxCount = c;
   }
-  document.getElementById('legend-max').textContent = maxCount.toLocaleString();
+  document.getElementById('legend-max').textContent = maxCount.toLocaleString() + '件';
 
   // ヘッダー行
   const thead = document.createElement('thead');
