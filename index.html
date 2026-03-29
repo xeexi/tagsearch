@@ -12,18 +12,37 @@
   html, body { height: 100%; font-family: sans-serif; }
   body { display: flex; flex-direction: column; }
 
+  .header-area {
+    position: relative;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .header-area canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  .header-area .page-title,
+  .header-area .description {
+    position: relative;
+    z-index: 1;
+  }
+
   .page-title {
-    background: #222;
+    background: transparent;
     color: #f0f0f0;
     margin: 0;
-    padding: 14px 20px 0;
+    padding: 24px 20px 0;
     font-size: 1.8em;
     text-align: center;
     flex-shrink: 0;
+    text-shadow: 0 0 12px rgba(0, 150, 200, 0.5);
   }
 
   .description {
-    background: #222;
+    background: transparent;
     color: #e0e0e0;
     padding: 12px 20px 32px;
     font-size: 14px;
@@ -96,14 +115,17 @@
 </style>
 </head>
 <body>
-  <h1 class="page-title">経験タグの Amazon 検索結果</h1>
-  <div class="description">
-    <p>２つのタグを Amazon の「本」カテゴリで検索してみました。</p>
-    <p>※検索結果は本のタイトル以外にマッチしたものも含みます</p>
-    <ul>
-      <li>マウスカーソルを hover するとハウツー本のタイトル案を表示</li>
-      <li>クリックすると検索時の画面キャプチャを表示</li>
-    </ul>
+  <div class="header-area">
+    <canvas id="fluidCanvas"></canvas>
+    <h1 class="page-title">経験タグの Amazon 検索結果</h1>
+    <div class="description">
+      <p>２つのタグを Amazon の「本」カテゴリで検索してみました。</p>
+      <p>※検索結果は本のタイトル以外にマッチしたものも含みます</p>
+      <ul>
+        <li>マウスカーソルを hover するとハウツー本のタイトル案を表示</li>
+        <li>クリックすると検索時の画面キャプチャを表示</li>
+      </ul>
+    </div>
   </div>
   <div class="tabs">
     <button class="active" onclick="switchTab(0)">「職務経験」</button>
@@ -116,6 +138,128 @@
     <iframe src="job_private.html"></iframe>
   </div>
   <script>
+    // 深海風流体アニメーション
+    (function() {
+      const canvas = document.getElementById('fluidCanvas');
+      const ctx = canvas.getContext('2d');
+      let w, h;
+      let time = 0;
+
+      function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        w = canvas.width = rect.width * window.devicePixelRatio;
+        h = canvas.height = rect.height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // メタボール（流体の塊）の定義
+      const blobs = [];
+      const blobCount = 8;
+      for (let i = 0; i < blobCount; i++) {
+        blobs.push({
+          x: Math.random(),
+          y: Math.random(),
+          vx: (Math.random() - 0.5) * 0.0003,
+          vy: (Math.random() - 0.5) * 0.0003,
+          radius: 0.15 + Math.random() * 0.2,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+
+      function draw() {
+        const dw = w / window.devicePixelRatio;
+        const dh = h / window.devicePixelRatio;
+        time += 0.003;
+
+        // 背景クリア
+        ctx.fillStyle = '#0a0f1a';
+        ctx.fillRect(0, 0, dw, dh);
+
+        // メタボールの位置更新
+        for (const b of blobs) {
+          b.x += b.vx + Math.sin(time * 0.7 + b.phase) * 0.0004;
+          b.y += b.vy + Math.cos(time * 0.5 + b.phase) * 0.0003;
+          // 壁での反射
+          if (b.x < -0.1 || b.x > 1.1) b.vx *= -1;
+          if (b.y < -0.1 || b.y > 1.1) b.vy *= -1;
+        }
+
+        // ピクセル単位の流体描画（ImageData使用）
+        const imgData = ctx.createImageData(dw, dh);
+        const data = imgData.data;
+        const step = 3; // パフォーマンスのため間引き
+
+        for (let py = 0; py < dh; py += step) {
+          for (let px = 0; px < dw; px += step) {
+            const nx = px / dw;
+            const ny = py / dh;
+
+            // 各メタボールからの影響を合算
+            let sum = 0;
+            let colorR = 0, colorG = 0, colorB = 0;
+            for (const b of blobs) {
+              const dx = nx - b.x;
+              const dy = ny - b.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              const influence = (b.radius * b.radius) / (dist * dist + 0.001);
+              sum += influence;
+
+              // 深海の色: 暗い青〜ティール〜深緑
+              const t = Math.sin(b.phase + time * 0.5) * 0.5 + 0.5;
+              colorR += influence * (5 + t * 15);
+              colorG += influence * (30 + t * 80);
+              colorB += influence * (60 + t * 100);
+            }
+
+            // 合算値でブレンド
+            const intensity = Math.min(sum / 3.0, 1.0);
+            const smoothing = intensity * intensity * (3 - 2 * intensity);
+
+            let r = Math.floor((colorR / sum) * smoothing);
+            let g = Math.floor((colorG / sum) * smoothing);
+            let b = Math.floor((colorB / sum) * smoothing);
+
+            // 深海の光の揺らぎ（コースティクス風）
+            const caustic = Math.sin(nx * 12 + time * 2) * Math.sin(ny * 10 - time * 1.5) * 0.5 + 0.5;
+            const causticIntensity = smoothing * caustic * 0.3;
+            g += Math.floor(causticIntensity * 40);
+            b += Math.floor(causticIntensity * 60);
+
+            r = Math.min(255, Math.max(0, r));
+            g = Math.min(255, Math.max(0, g));
+            b = Math.min(255, Math.max(0, b));
+
+            // step x step のブロックを塗る
+            for (let sy = 0; sy < step && py + sy < dh; sy++) {
+              for (let sx = 0; sx < step && px + sx < dw; sx++) {
+                const idx = ((py + sy) * dw + (px + sx)) * 4;
+                data[idx] = r;
+                data[idx + 1] = g;
+                data[idx + 2] = b;
+                data[idx + 3] = 255;
+              }
+            }
+          }
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+
+        // 上にオーバーレイで深みを出す
+        const grad = ctx.createLinearGradient(0, 0, 0, dh);
+        grad.addColorStop(0, 'rgba(5, 10, 30, 0.3)');
+        grad.addColorStop(0.5, 'rgba(0, 20, 40, 0.1)');
+        grad.addColorStop(1, 'rgba(5, 10, 20, 0.4)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, dw, dh);
+
+        requestAnimationFrame(draw);
+      }
+
+      requestAnimationFrame(draw);
+    })();
+
     function switchTab(index) {
       const buttons = document.querySelectorAll('.tabs button');
       const iframes = document.querySelectorAll('.iframe-container iframe');
