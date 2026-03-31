@@ -402,28 +402,31 @@ buildTable();
 // has-dataセルのホバー時に行ラベル・列ラベルの文字色を白にする
 (function() {
   const table = document.getElementById('result-table');
-  table.addEventListener('mouseenter', function(e) {
-    const td = e.target.closest('td.has-data');
-    if (!td) return;
-    const row = td.parentElement;
-    const cellIndex = Array.from(row.children).indexOf(td);
-    // 行ラベル
-    const rowHeader = row.querySelector('th');
-    if (rowHeader) rowHeader.style.color = '#fff';
-    // 列ラベル
-    const colHeader = table.querySelector('thead tr').children[cellIndex];
-    if (colHeader) colHeader.style.color = '#fff';
-  }, true);
-  table.addEventListener('mouseleave', function(e) {
-    const td = e.target.closest('td.has-data');
-    if (!td) return;
-    const row = td.parentElement;
-    const cellIndex = Array.from(row.children).indexOf(td);
-    const rowHeader = row.querySelector('th');
+  let prevHighlighted = null;
+
+  function clearHighlight() {
+    if (!prevHighlighted) return;
+    const { rowHeader, colHeader } = prevHighlighted;
     if (rowHeader) rowHeader.style.color = '';
-    const colHeader = table.querySelector('thead tr').children[cellIndex];
     if (colHeader) colHeader.style.color = '';
-  }, true);
+    prevHighlighted = null;
+  }
+
+  document.addEventListener('mouseover', function(e) {
+    const td = e.target.closest('td.has-data');
+    if (!td || !table.contains(td)) {
+      clearHighlight();
+      return;
+    }
+    clearHighlight();
+    const row = td.parentElement;
+    const cellIndex = Array.from(row.children).indexOf(td);
+    const rowHeader = row.querySelector('th');
+    const colHeader = table.querySelector('thead tr').children[cellIndex];
+    if (rowHeader) rowHeader.style.color = '#fff';
+    if (colHeader) colHeader.style.color = '#fff';
+    prevHighlighted = { rowHeader, colHeader };
+  });
 })();
 </script>
 </body>

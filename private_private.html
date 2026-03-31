@@ -299,39 +299,44 @@ const tooltip = document.getElementById('tooltip');
 const ttTitle = tooltip.querySelector('.tt-title');
 const ttUl = tooltip.querySelector('ul');
 
-document.addEventListener('mouseover', function(e) {
-  const cell = e.target.closest('td.data');
-  if (!cell || cell.classList.contains('empty')) {
-    tooltip.style.display = 'none';
-    return;
-  }
+function showTooltip(e) {
+  const cell = e.currentTarget;
   const t1 = cell.dataset.t1;
   const t2 = cell.dataset.t2;
   const key = t1 + '|' + t2;
   const bookTitles = titlesData[key];
-  if (!bookTitles) {
-    tooltip.style.display = 'none';
-    return;
-  }
+  if (!bookTitles) return;
   ttTitle.textContent = '\u300C' + t1 + '\u300D\u3000\u00D7\u3000\u300C' + t2 + '\u300D';
   ttUl.innerHTML = bookTitles.map(t => `<li>${t}</li>`).join('');
   tooltip.style.display = 'block';
   positionTooltip(e);
-});
 
-document.addEventListener('mousemove', function(e) {
-  if (tooltip.style.display === 'block') positionTooltip(e);
-});
+  // 行・列ラベルの文字色を白にする
+  const row = cell.parentElement;
+  const cellIndex = Array.from(row.children).indexOf(cell);
+  const rowHeader = row.querySelector('th.row-header');
+  const colHeader = table.querySelector('thead tr').children[cellIndex];
+  if (rowHeader) rowHeader.style.color = '#fff';
+  if (colHeader) colHeader.style.color = '#fff';
+  cell._highlightedHeaders = { rowHeader, colHeader };
+}
 
-document.addEventListener('mouseout', function(e) {
-  const cell = e.target.closest('td.data');
-  if (cell) {
-    const related = e.relatedTarget;
-    if (!related || !related.closest || related.closest('td.data') !== cell) {
-      tooltip.style.display = 'none';
-    }
+function moveTooltip(e) {
+  positionTooltip(e);
+}
+
+function hideTooltip(e) {
+  tooltip.style.display = 'none';
+
+  // 行・列ラベルの文字色を戻す
+  const cell = e.currentTarget;
+  if (cell._highlightedHeaders) {
+    const { rowHeader, colHeader } = cell._highlightedHeaders;
+    if (rowHeader) rowHeader.style.color = '';
+    if (colHeader) colHeader.style.color = '';
+    cell._highlightedHeaders = null;
   }
-});
+}
 
 function positionTooltip(e) {
   const pad = 12;
@@ -347,44 +352,22 @@ function positionTooltip(e) {
   tooltip.style.top = y + 'px';
 }
 
-// セルクリック → ポップアップ
-document.addEventListener('click', function(e) {
-  const cell = e.target.closest('td.data');
-  if (!cell || cell.classList.contains('empty')) return;
-  const t1 = cell.dataset.t1;
-  const t2 = cell.dataset.t2;
-  const img = document.getElementById('overlayImg');
-  img.src = 'private_private/' + t1 + '_' + t2 + '.png';
-  document.getElementById('overlay').classList.add('active');
-  tooltip.style.display = 'none';
-});
+// has-dataセルにイベントをバインド
+table.querySelectorAll('td.has-data').forEach(function(td) {
+  td.addEventListener('mouseenter', showTooltip);
+  td.addEventListener('mousemove', moveTooltip);
+  td.addEventListener('mouseleave', hideTooltip);
 
-// has-dataセルのホバー時に行ラベル・列ラベルの文字色を白にする
-(function() {
-  const table = document.getElementById('mainTable');
-  table.addEventListener('mouseenter', function(e) {
-    const td = e.target.closest('td.has-data');
-    if (!td) return;
-    const row = td.parentElement;
-    const cellIndex = Array.from(row.children).indexOf(td);
-    // 行ラベル
-    const rowHeader = row.querySelector('th.row-header');
-    if (rowHeader) rowHeader.style.color = '#fff';
-    // 列ラベル
-    const colHeader = table.querySelector('thead tr').children[cellIndex];
-    if (colHeader) colHeader.style.color = '#fff';
-  }, true);
-  table.addEventListener('mouseleave', function(e) {
-    const td = e.target.closest('td.has-data');
-    if (!td) return;
-    const row = td.parentElement;
-    const cellIndex = Array.from(row.children).indexOf(td);
-    const rowHeader = row.querySelector('th.row-header');
-    if (rowHeader) rowHeader.style.color = '';
-    const colHeader = table.querySelector('thead tr').children[cellIndex];
-    if (colHeader) colHeader.style.color = '';
-  }, true);
-})();
+  // クリックで画像ポップアップ
+  td.addEventListener('click', function() {
+    const t1 = this.dataset.t1;
+    const t2 = this.dataset.t2;
+    const img = document.getElementById('overlayImg');
+    img.src = 'private_private/' + t1 + '_' + t2 + '.png';
+    document.getElementById('overlay').classList.add('active');
+    tooltip.style.display = 'none';
+  });
+});
 </script>
 </body>
 </html>
