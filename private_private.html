@@ -358,6 +358,33 @@ document.addEventListener('click', function(e) {
   document.getElementById('overlay').classList.add('active');
   tooltip.style.display = 'none';
 });
+
+// has-dataセルのホバー時に行ラベル・列ラベルの文字色を白にする
+(function() {
+  const table = document.getElementById('mainTable');
+  table.addEventListener('mouseenter', function(e) {
+    const td = e.target.closest('td.has-data');
+    if (!td) return;
+    const row = td.parentElement;
+    const cellIndex = Array.from(row.children).indexOf(td);
+    // 行ラベル
+    const rowHeader = row.querySelector('th.row-header');
+    if (rowHeader) rowHeader.style.color = '#fff';
+    // 列ラベル
+    const colHeader = table.querySelector('thead tr').children[cellIndex];
+    if (colHeader) colHeader.style.color = '#fff';
+  }, true);
+  table.addEventListener('mouseleave', function(e) {
+    const td = e.target.closest('td.has-data');
+    if (!td) return;
+    const row = td.parentElement;
+    const cellIndex = Array.from(row.children).indexOf(td);
+    const rowHeader = row.querySelector('th.row-header');
+    if (rowHeader) rowHeader.style.color = '';
+    const colHeader = table.querySelector('thead tr').children[cellIndex];
+    if (colHeader) colHeader.style.color = '';
+  }, true);
+})();
 </script>
 </body>
 </html>
